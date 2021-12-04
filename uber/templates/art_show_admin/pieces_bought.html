@@ -116,6 +116,7 @@ Invoice #{{ receipt.invoice_num }}
       </td></tr>
       <tr><td colspan="8" class="text-right">
       <div class="form form-inline">
+        <input type="hidden" id="original_total_cents" value="{{ receipt.owed }}" />
           <div class="input-group">
             <span class="input-group-addon">$</span><input type="text" class="form-control" id="stripe_amount" placeholder="{{ (receipt.owed / 100)format_currency }}" />
           </div>
@@ -170,9 +171,10 @@ Invoice #{{ receipt.invoice_num }}
     var callStripeAction = function() {
       var credit_amt = $('#stripe_amount').val();
       if (credit_amt == 0) {
-        credit_amt = {{ receipt.owed }} / 100;
+        stripe_action_params.amount = $('#original_total_cents').val();
+      } else {
+        stripe_action_params.amount = credit_amt * 100;
       }
-      stripe_action_params.amount = credit_amt * 100;
       resumeStripeAction();
     }
 
